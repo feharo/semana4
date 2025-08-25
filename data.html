@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trabalhando com Datas com Date FNS</title>
+  </head>
+  <br>
+  <h3>Transformar Minutos em Segundos</h3>
+    Minutos <input type="number" id="minutos" /> </br>
+    Segundos <input type="number" id="segundosComMinutos" readonly />
+    <hr>
+
+    <h3>Transformar Horas em Segundos</h3>
+    Horas <input type="number" id="horas" /> </br>
+    Segundos <input type="number" id="segundosComHoras" readonly />
+    <hr>
+
+    <h3>Descubra quantos anos você tem</h3>
+    Data de Nascimento <input type="date" id="dataDeNascimento" max="9999-12-31">
+    <button type="button" id="calcularDataDeNascimento">Calcular</button>
+    <div id="resultadoDataDeNascimento"></div>
+
+
+
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@4.1.0/cdn.min.js"></script>
+    <script>
+      // Exemplo de uso do Date FNS
+    //   const hoje = new Date();
+    //   const dataAntiga = dateFns.format(hoje, "2000/06/30 12:12:53");
+    //   const dataAtual = dateFns.format(hoje, "y/m/d HH:mm:ss");
+
+    //   const result = dateFns.differenceInDays(dataAtual, dataAntiga);
+    //   console.log(result);
+    //   // transformar minutos em segundos
+    //   // transformar horas em segundos
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const minutos = document.getElementById("minutos");
+        const horas = document.getElementById("horas");
+
+        minutos.addEventListener("input", () => {
+            if(minutos !== ""){
+                const segundos = minutos.value*60;
+                document.getElementById("segundosComMinutos").value = segundos;
+            }
+        })
+
+        horas.addEventListener("input", () => {
+            if(horas !== ""){
+                const minutos = horas.value*60;
+                const segundos = minutos*60;
+                document.getElementById("segundosComHoras").value = segundos;
+            }
+        })
+
+        const buttonCalcularDataDeNascimento  = document.getElementById("calcularDataDeNascimento")
+
+        buttonCalcularDataDeNascimento.addEventListener("click", () => {
+            const dataDeNascimento = document.getElementById("dataDeNascimento").value;
+            const now = new Date();
+            const formatDataNascimento = dateFns.format(dateFns.addDays(dataDeNascimento, 1), "yyyy/MM/dd");
+            const formatDataAtual = dateFns.format(now, "yyyy/MM/dd");
+            const resultado = dateFns.differenceInYears(formatDataAtual, formatDataNascimento);
+            const anosIsPlural = resultado > 1 ? "anos" : "ano";
+            document.getElementById("resultadoDataDeNascimento").innerHTML = 
+            `<h3 style="color: orange;">Você possui ${resultado} ${anosIsPlural}.</h3>`;
+        })
+      });
+    </script>
+  </body>
+</html>
