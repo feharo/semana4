@@ -201,7 +201,7 @@
           })
           .join("");
 
-        resultEl.innerHTML = `
+        return `
                     <div class="card hero-card shadow-sm">
                         <div class="cover">
                             <div class="row g-0">
@@ -337,10 +337,12 @@
       btnBuscarHeroi.addEventListener("click", async (e) => {
         const nomeConsultado = document.getElementById("query").value;
         const heroiEncontrado = await search(nomeConsultado);
+        let renderResultApi = "";
         if (heroiEncontrado.results) {
           heroiEncontrado.results.forEach((heroi) => {
-            renderHero(heroi);
+            renderResultApi += renderHero(heroi);
           });
+          resultEl.innerHTML = renderResultApi;
           showStatus("");
         } else {
           showStatus(hero.message);
