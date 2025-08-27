@@ -14,3 +14,31 @@ async function search(name) {
     return { message: "Erro na requisição", error: err.message };
   }
 }
+
+async function biographyById(id) {
+  try {
+    const res = await fetch(`${baseURL}/${id}/biography`);
+    const data = await res.json();
+    if (data.response === "success") {
+      return { results: data };
+    } else {
+      return { message: "Nenhum biografia encontrada para esse personagem" };
+    }
+  } catch (err) {
+    return { message: "Erro na requisição", error: err.message };
+  }
+}
+
+async function heroiById(id) {
+  try {
+    const res = await fetch(`${baseURL}/${id}`);
+    const data = await res.json();
+    if (data.response === "success") {
+      return { results: data };
+    } else {
+      return { message: "Nenhum biografia encontrada para esse personagem" };
+    }
+  } catch (err) {
+    return { message: "Erro na requisição", error: err.message };
+  }
+}

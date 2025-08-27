@@ -125,33 +125,34 @@
     <script src="superHeroApiService.js"></script>
 
     <script>
-      // GitHub Copilot style helper page: consulta pública akabab superhero API
-      const API_ALL = "https://akabab.github.io/superhero-api/api/all.json";
-      let heroesCache = null;
-      const resultEl = document.getElementById("result");
-      const statusEl = document.getElementById("status");
-      const qInput = document.getElementById("query");
+      document.addEventListener("DOMContentLoaded", function () {
+        // GitHub Copilot style helper page: consulta pública akabab superhero API
+        const API_ALL = "https://akabab.github.io/superhero-api/api/all.json";
+        let heroesCache = null;
+        const resultEl = document.getElementById("result");
+        const statusEl = document.getElementById("status");
+        const qInput = document.getElementById("query");
 
-      async function loadAllHeroes() {
-        if (heroesCache) return heroesCache;
-        statusEl.textContent = "Carregando base...";
-        const res = await fetch(API_ALL);
-        if (!res.ok) throw new Error("Erro ao carregar API");
-        heroesCache = await res.json();
-        statusEl.textContent = "";
-        return heroesCache;
-      }
+        async function loadAllHeroes() {
+          if (heroesCache) return heroesCache;
+          statusEl.textContent = "Carregando base...";
+          const res = await fetch(API_ALL);
+          if (!res.ok) throw new Error("Erro ao carregar API");
+          heroesCache = await res.json();
+          statusEl.textContent = "";
+          return heroesCache;
+        }
 
-      function showStatus(msg) {
-        statusEl.textContent = msg || "";
-      }
+        function showStatus(msg) {
+          statusEl.textContent = msg || "";
+        }
 
-      function clearResult() {
-        resultEl.innerHTML = "";
-      }
+        function clearResult() {
+          resultEl.innerHTML = "";
+        }
 
-      function createKeyValueRow(key, value) {
-        return `
+        function createKeyValueRow(key, value) {
+          return `
                     <div class="d-flex justify-content-between align-items-start border-top py-2">
                         <div class="text-muted small">${key}</div>
                         <div style="max-width:60%;" class="text-end">${
@@ -159,233 +160,234 @@
                         }</div>
                     </div>
                 `;
-      }
+        }
 
-      function escapeHtml(s) {
-        if (s == null) return "";
-        return String(s).replace(
-          /[&<>"']/g,
-          (c) =>
-            ({
-              "&": "&amp;",
-              "<": "&lt;",
-              ">": "&gt;",
-              '"': "&quot;",
-              "'": "&#39;",
-            }[c])
-        );
-      }
+        function escapeHtml(s) {
+          if (s == null) return "";
+          return String(s).replace(
+            /[&<>"']/g,
+            (c) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;",
+              }[c])
+          );
+        }
 
-      function renderHero(heroi) {
-        const img = heroi.image?.url || "";
-        const name = escapeHtml(heroi.name);
-        const fullName = escapeHtml(heroi.biography?.["full-name"]) || "—";
-        const publisher = escapeHtml(heroi.biography?.publisher) || "—";
-        const placeOfBirth = escapeHtml(heroi.biography?.placeOfBirth) || "—";
-        const occupation = escapeHtml(heroi.work?.occupation) || "—";
-        const connections =
-          escapeHtml(heroi.connections?.groupAffiliation) || "—";
-        const stats = heroi.powerstats || {};
-        const appearance = heroi.appearance || {};
-        const height =
-          (appearance.height && appearance.height.join(" / ")) || "—";
-        const weight =
-          (appearance.weight && appearance.weight.join(" / ")) || "—";
+        function renderHero(heroi) {
+          const img = heroi.image?.url || "";
+          const name = escapeHtml(heroi.name);
+          const fullName = escapeHtml(heroi.biography?.["full-name"]) || "—";
+          const publisher = escapeHtml(heroi.biography?.publisher) || "—";
+          const placeOfBirth = escapeHtml(heroi.biography?.placeOfBirth) || "—";
+          const occupation = escapeHtml(heroi.work?.occupation) || "—";
+          const connections =
+            escapeHtml(heroi.connections?.groupAffiliation) || "—";
+          const stats = heroi.powerstats || {};
+          const appearance = heroi.appearance || {};
+          const height =
+            (appearance.height && appearance.height.join(" / ")) || "—";
+          const weight =
+            (appearance.weight && appearance.weight.join(" / ")) || "—";
 
-        const statsHtml = Object.entries(stats)
-          .map(([k, v]) => {
-            const val = v === null ? "—" : v;
-            return `<div class="badge bg-light text-dark me-2 mb-2 stat-pill">${escapeHtml(
-              k
-            )}: <strong>${escapeHtml(val)}</strong></div>`;
-          })
-          .join("");
+          const statsHtml = Object.entries(stats)
+            .map(([k, v]) => {
+              const val = v === null ? "—" : v;
+              return `<div class="badge bg-light text-dark me-2 mb-2 stat-pill">${escapeHtml(
+                k
+              )}: <strong>${escapeHtml(val)}</strong></div>`;
+            })
+            .join("");
 
-        return `
-                    <div class="card hero-card shadow-sm">
-                        <div class="cover">
-                            <div class="row g-0">
-                                <div class="col-12 col-md-4">
-                                    <img src="${img}" alt="${name}" class="hero-portrait rounded mb-3 mb-md-0" loading="lazy" />
-                                </div>
-                                <div class="col-12 col-md-8">
-                                    <div class="p-3">
-                                        <div class="d-flex align-items-start justify-content-between mb-2">
-                                            <div>
-                                                <h2 class="h4 mb-1">${name}</h2>
-                                                <div class="muted-small">Nome real: ${fullName}</div>
-                                                <div class="muted-small">Editora: ${publisher}</div>
-                                            </div>
-                                            <div class="text-end">
-                                                <div class="muted-small">ID: <strong>${
-                                                  heroi.id
-                                                }</strong></div>
-                                                <div class="muted-small">Raça: ${escapeHtml(
-                                                  appearance.race || "—"
-                                                )}</div>
-                                            </div>
+          return `
+                <div class="card hero-card shadow-sm mb-3">
+                    <div class="cover">
+                        <div class="row g-0">
+                            <div class="col-12 col-md-4">
+                                <img src="${img}" alt="${name}" class="hero-portrait rounded mb-3 mb-md-0" loading="lazy" />
+                            </div>
+                            <div class="col-12 col-md-8">
+                                <div class="p-3">
+                                    <div class="d-flex align-items-start justify-content-between mb-2">
+                                        <div>
+                                            <h2 class="h4 mb-1">${name}</h2>
+                                            <div class="muted-small">Nome real: ${fullName}</div>
+                                            <div class="muted-small">Editora: ${publisher}</div>
                                         </div>
-
-                                        <div class="my-2">${statsHtml}</div>
-
-                                        <div class="mt-3">
-                                            ${createKeyValueRow(
-                                              "Ocupação",
-                                              occupation
-                                            )}
-                                            ${createKeyValueRow(
-                                              "Local de Nascimento",
-                                              placeOfBirth
-                                            )}
-                                            ${createKeyValueRow(
-                                              "Altura",
-                                              height
-                                            )}
-                                            ${createKeyValueRow("Peso", weight)}
-                                            ${createKeyValueRow(
-                                              "Conexões",
-                                              connections
-                                            )}
-                                            ${createKeyValueRow(
-                                              "Base",
-                                              escapeHtml(
-                                                heroi.work?.base || "—"
-                                              )
-                                            )}
+                                        <div class="text-end">
+                                            <div class="muted-small">ID: <strong>${
+                                              heroi.id
+                                            }</strong></div>
+                                            <div class="muted-small">Raça: ${escapeHtml(
+                                              appearance.race || "—"
+                                            )}</div>
                                         </div>
+                                    </div>
 
-                                        <div class="mt-3">
-                                            <button id="moreBtn" class="btn btn-outline-primary btn-sm">Mais detalhes</button>
-                                            <button id="backBtn" class="btn btn-link btn-sm text-decoration-none">Nova busca</button>
-                                        </div>
+                                    <div class="my-2">${statsHtml}</div>
+
+                                    <div class="mt-3">
+                                        ${createKeyValueRow(
+                                          "Ocupação",
+                                          occupation
+                                        )}
+                                        ${createKeyValueRow(
+                                          "Local de Nascimento",
+                                          placeOfBirth
+                                        )}
+                                        ${createKeyValueRow("Altura", height)}
+                                        ${createKeyValueRow("Peso", weight)}
+                                        ${createKeyValueRow(
+                                          "Conexões",
+                                          connections
+                                        )}
+                                        ${createKeyValueRow(
+                                          "Base",
+                                          escapeHtml(heroi.work?.base || "—")
+                                        )}
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <button data-id="${
+                                          heroi.id
+                                        }" class="btn btn-outline-primary btn-sm moreBtn">Mais detalhes</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                `;
+                </div>
+            `;
 
-        document.getElementById("backBtn").addEventListener("click", () => {
+          document.getElementById("backBtn").addEventListener("click", () => {
+            clearResult();
+            qInput.focus();
+          });
+        }
+
+        resultEl.addEventListener("click", async (e) => {
+          if (e.target.classList.contains("moreBtn")) {
+            const idHeroi = e.target.dataset.id;
+            const biography = await biographyById(idHeroi);
+
+            const bio =
+              escapeHtml(
+                biography?.results?.aliases?.join(", ") || "Sem aliases"
+              ) +
+              "<br><br>" +
+              escapeHtml(biography?.results?.["alter-egos"] || "");
+            const modal = document.createElement("div");
+            modal.className =
+              "position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center";
+            modal.style.background = "rgba(0,0,0,0.5)";
+            modal.innerHTML = `<div class="bg-white rounded p-3 shadow" style="max-width:450px;width:92%;">
+                          <h5 class="mb-2">${
+                            biography?.results?.name
+                          } — Biografia</h5>
+                          <div class="small text-muted mb-3">${escapeHtml(
+                            biography?.results?.publisher || ""
+                          )}</div>
+                          <div class="mb-3 small">${escapeHtml(
+                            biography?.results?.["full-name"] || ""
+                          )}</div>
+                          <div class="mb-3">${escapeHtml(
+                            biography?.results?.["place-of-birth"] || ""
+                          )}</div>
+                          <div class="mb-3">${escapeHtml(
+                            biography?.results?.aliases?.join(", ") || "—"
+                          )}</div>
+                          <div class="text-end"><button class="btn btn-sm btn-primary">Fechar</button></div>
+                      </div>`;
+            modal
+              .querySelector("button")
+              .addEventListener("click", () => modal.remove());
+            modal.addEventListener("click", (e) => {
+              if (e.target === modal) modal.remove();
+            });
+            document.body.appendChild(modal);
+          }
+        });
+
+        // async function findHeroByName(query) {
+        //   const all = await loadAllHeroes();
+        //   const q = query.trim().toLowerCase();
+        //   // prefer exact match, fallback to includes
+        //   let found = all.find((h) => h.name.toLowerCase() === q);
+        //   if (!found) {
+        //     found = all.find(
+        //       (h) => (h.biography?.fullName || "").toLowerCase() === q
+        //     );
+        //   }
+        //   if (!found) {
+        //     found = all.find((h) => h.name.toLowerCase().includes(q));
+        //   }
+        //   if (!found) {
+        //     // try splitting words and match any
+        //     const parts = q.split(/\s+/).filter(Boolean);
+        //     found = all.find((h) =>
+        //       parts.every(
+        //         (p) =>
+        //           h.name.toLowerCase().includes(p) ||
+        //           (h.biography?.fullName || "").toLowerCase().includes(p)
+        //       )
+        //     );
+        //   }
+        //   return found || null;
+        // }
+
+        const btnBuscarHeroi = document.getElementById("searchBtn");
+        btnBuscarHeroi.addEventListener("click", async (e) => {
+          const nomeConsultado = document.getElementById("query").value;
+          const heroiEncontrado = await search(nomeConsultado);
+          let renderResultApi = "";
+          if (heroiEncontrado.results) {
+            heroiEncontrado.results.forEach((heroi) => {
+              renderResultApi += renderHero(heroi);
+            });
+            resultEl.innerHTML = renderResultApi;
+            showStatus("");
+          } else {
+            showStatus(hero.message);
+          }
+        });
+
+        document
+          .getElementById("randomBtn")
+          .addEventListener("click", async () => {
+            clearResult();
+            showStatus("Sorteando herói...");
+            try {
+              const idRandom = Math.floor(Math.random() * (731 - 1 + 1)) + 1;
+              const heroi = await heroiById(idRandom);
+              resultEl.innerHTML = renderHero(heroi.results);
+              showStatus("");
+            } catch (err) {
+              showStatus("");
+              resultEl.innerHTML = `<div class="alert alert-danger">Erro ao carregar heróis.</div>`;
+              console.error(err);
+            }
+          });
+
+        document.getElementById("clearBtn").addEventListener("click", () => {
+          qInput.value = "";
           clearResult();
+          showStatus("");
           qInput.focus();
         });
 
-        document.getElementById("moreBtn").addEventListener("click", () => {
-          // toggle a simple modal-style panel with biography
-          const bio =
-            escapeHtml(heroi.biography?.aliases?.join(", ") || "Sem aliases") +
-            "<br><br>" +
-            escapeHtml(heroi.biography?.alterEgos || "");
-          const modal = document.createElement("div");
-          modal.className =
-            "position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center";
-          modal.style.background = "rgba(0,0,0,0.5)";
-          modal.innerHTML = `<div class="bg-white rounded p-3 shadow" style="max-width:520px;width:92%;">
-                        <h5 class="mb-2">${name} — Biografia</h5>
-                        <div class="small text-muted mb-3">${escapeHtml(
-                          heroi.biography?.publisher || ""
-                        )}</div>
-                        <div class="mb-3 small">${escapeHtml(
-                          heroi.biography?.fullName || ""
-                        )}</div>
-                        <div class="mb-3">${escapeHtml(
-                          heroi.biography?.placeOfBirth || ""
-                        )}</div>
-                        <div class="mb-3">${escapeHtml(
-                          heroi.biography?.aliases?.join(", ") || "—"
-                        )}</div>
-                        <div class="text-end"><button class="btn btn-sm btn-primary">Fechar</button></div>
-                    </div>`;
-          modal
-            .querySelector("button")
-            .addEventListener("click", () => modal.remove());
-          modal.addEventListener("click", (e) => {
-            if (e.target === modal) modal.remove();
-          });
-          document.body.appendChild(modal);
-        });
-      }
-
-      async function findHeroByName(query) {
-        const all = await loadAllHeroes();
-        const q = query.trim().toLowerCase();
-        // prefer exact match, fallback to includes
-        let found = all.find((h) => h.name.toLowerCase() === q);
-        if (!found) {
-          found = all.find(
-            (h) => (h.biography?.fullName || "").toLowerCase() === q
-          );
-        }
-        if (!found) {
-          found = all.find((h) => h.name.toLowerCase().includes(q));
-        }
-        if (!found) {
-          // try splitting words and match any
-          const parts = q.split(/\s+/).filter(Boolean);
-          found = all.find((h) =>
-            parts.every(
-              (p) =>
-                h.name.toLowerCase().includes(p) ||
-                (h.biography?.fullName || "").toLowerCase().includes(p)
-            )
-          );
-        }
-        return found || null;
-      }
-
-      const btnBuscarHeroi = document.getElementById("searchBtn");
-      btnBuscarHeroi.addEventListener("click", async (e) => {
-        const nomeConsultado = document.getElementById("query").value;
-        const heroiEncontrado = await search(nomeConsultado);
-        let renderResultApi = "";
-        if (heroiEncontrado.results) {
-          heroiEncontrado.results.forEach((heroi) => {
-            renderResultApi += renderHero(heroi);
-          });
-          resultEl.innerHTML = renderResultApi;
-          showStatus("");
-        } else {
-          showStatus(hero.message);
-        }
+        // optional: allow quick search by pressing Enter in input (form submit handles it)
+        // preload a small subset on first user interaction (progressive)
+        window.addEventListener(
+          "focus",
+          () => {
+            // nothing heavy here
+          },
+          { once: true }
+        );
       });
-
-      //   document
-      //     .getElementById("randomBtn")
-      //     .addEventListener("click", async () => {
-      //       clearResult();
-      //       showStatus("Sorteando herói...");
-      //       try {
-      //         const all = await loadAllHeroes();
-      //         const pick = all[Math.floor(Math.random() * all.length)];
-      //         showStatus("");
-      //         renderHero(pick);
-      //         window.scrollTo({
-      //           top: resultEl.offsetTop - 10,
-      //           behavior: "smooth",
-      //         });
-      //       } catch (err) {
-      //         showStatus("");
-      //         resultEl.innerHTML = `<div class="alert alert-danger">Erro ao carregar heróis.</div>`;
-      //         console.error(err);
-      //       }
-      //     });
-
-      //   document.getElementById("clearBtn").addEventListener("click", () => {
-      //     qInput.value = "";
-      //     clearResult();
-      //     showStatus("");
-      //     qInput.focus();
-      //   });
-
-      // optional: allow quick search by pressing Enter in input (form submit handles it)
-      // preload a small subset on first user interaction (progressive)
-      window.addEventListener(
-        "focus",
-        () => {
-          // nothing heavy here
-        },
-        { once: true }
-      );
     </script>
   </body>
 </html>
